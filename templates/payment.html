@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+            var options = {
+                "key": "rzp_test_UjALlxSGoBRkey", // Enter the Key ID generated from the Dashboard
+                "amount": "{{payment['amount']}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                "currency": "INR",
+                "name": "PRW", //your business name
+                "image": "https://example.com/your_logo",
+                "order_id": "{{payment['order_id']}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "callback_url": "../success",
+                "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                    "name": "{{user.first_name}} {{user.last_name}}", //your customer's name
+                    "email": "{{user.email}}",
+                    "contact": "{{user.mobile_number}}" //Provide the customer's phone number for better conversion rates 
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open()
+        </script>
+    </div>
+</body>
+</html>

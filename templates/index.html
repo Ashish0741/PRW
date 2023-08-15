@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %} Index Page {% endblock title %}
+
+
+{% block body %}
+
+<!-- Jumbotron Start -->
+<div class="jumbotron jumbotron-fluid bg-jumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <h1 class="display-4 bg-jumbtext"><b>Experience More, Own Less!</b></h1>
+                <p class="lead text-light">Rent Premium Products for Memorable Moments.</p>
+            </div>
+            <div class="col-md-3">
+                <img src="{{ url_for('static', filename='images/uploads/home_page2.png')}}" class="hide-bg"
+                    alt="home page image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Jumbotron End -->
+
+<!-- Featured Products Start -->
+<section class="featured-products">
+    <div class="container">
+        {% include 'messages.html' %}
+        <!-- Search Button Start -->
+        <h3>Search for product :</h3>
+        <form methods="get">
+            <div class="row mb-5">
+                <div class="col-md-10">
+                    <input type="text" class="form-control" name="search" placeholder="Search here" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-dark btn-block">Search</button>
+                </div>
+            </div>
+        </form>
+        <!-- Search Button Start -->
+
+        <h2 class="text-center mt-3">Featured Products</h2>
+        <hr>
+        {% if all_products|length != 0 %}
+        {% for category,products in all_products.items() %}
+        <h3>{{ category }}</h3>
+        <hr>
+        <div class="row mb-5">
+            {% for product in products %}
+            <div class="col-md-4 shadow-lg">
+                <div class="card w-100 h-100 mb-2">
+                    <img src="{{ url_for('static', filename='images/products/' + product.product_image) }}"
+                        class="container-fluid card-img-top mt-3" style="height: 200px;" alt="Product 1">
+                    <div class="card-body">
+                        <h5 class="card-title">{{product.product_name}}</h5>
+                        <p class="card-text">Rent : Rs. {{product.product_price}}/month</p>
+                        <!-- <p class="card-text">Desc : {{product.product_desc}}</p> -->
+                        <div class="row justify-content-between">
+                            <div class="col-auto">
+                                <a href="/product_view_page/{{product.product_id}}"
+                                    class="btn btn-outline-dark px-5">View</a>
+                            </div>
+                            <div class="col-auto">
+                                <a href="/add_to_cart/{{product.product_id}}" class="btn btn-outline-dark px-4">Add to
+                                    cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+        <hr>
+        {% endfor %}
+        {% else %}
+        <h4 class="text-center">No result found.</h4>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Featured Products End -->
+
+
+{% endblock body %}

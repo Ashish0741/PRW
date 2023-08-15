@@ -1,0 +1,229 @@
+{% extends 'base_02.html' %}
+
+{% block title %}
+Renter Page
+{% endblock title %}
+
+{% block body %}
+
+<!-- Jumbotron Start -->
+<div class="jumbotron jumbotron-fluid bg-jumb">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <h2 class="display-4 bg-jumbtext"><b>Seamless Sales, Limitless Possibilities!</b></h2>
+                <h2 class="text-light">Your Journey Starts Here.</h2>
+            </div>
+            <div class="col-md-2">
+                <img src="{{ url_for('static', filename='images/uploads/home_page2.png')}}" class="hide-bg" alt="home page image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Jumbotron End -->
+
+<div class="container">
+    {% include 'messages.html' %}
+</div>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="add-category-tab" data-toggle="tab" href="#add-category" role="tab"
+            aria-controls="nav-home" aria-selected="true">Add Category</a>
+        <a class="nav-item nav-link" id="add-products-tab" data-toggle="tab" href="#add-products" role="tab"
+            aria-controls="nav-profile" aria-selected="false">Add Products</a>
+        <a class="nav-item nav-link" id="nav-products-tab" data-toggle="tab" href="#nav-products" role="tab"
+            aria-controls="nav-contact" aria-selected="false">Products</a>
+        <a class="nav-item nav-link" id="nav-orders-tab" data-toggle="tab" href="#nav-orders" role="tab"
+            aria-controls="nav-order" aria-selected="false">Orders</a>
+    </div>
+</nav>
+
+<div class="tab-content mb-5" id="nav-tabContent">
+    <div class="tab-pane fade" id="add-products" role="tabpanel" aria-labelledby="add-products-tab">
+        <div class="container">
+            <div class="card my-5">
+                <div class="card-body">
+                    <form action="/add_products" method="post" enctype="multipart/form-data">
+                        <h1>Add Product</h1>
+                        <hr>
+
+                        <div class="form-group">
+                            <label>Category : </label>
+                            <select class="btn btn-outline-dark" id="category" name="category_name">
+                                {% for category in categories %}
+                                <option value="{{ category.category_name }}">{{ category.category_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" name="product_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="number" class="form-control" name="product_price" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Image</label>
+                            <input type="file" class="form-control btn btn-outline-dark" name="product_image" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" name="product_desc" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-dark">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tab-pane fade show active" id="add-category" role="tabpanel" aria-labelledby="add-category-tab">
+        <div class="container">
+
+            <div class="card my-5">
+                <div class="card-body">
+                    <form action="/add_category" method="post">
+                        <h1>Add Category</h1>
+                        <hr>
+
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" name="category_name" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-dark">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3>All Categories : </h3>
+                    <hr>
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col">SR. NO.</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                            <tr>
+                                <th scope="row">{{loop.index}}</th>
+                                <td>{{category.category_name}}</td>
+                                <td>
+                                    <a href="/delete_category/{{category.category_id}}"
+                                        class="btn btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
+        <div class="container">
+            <div class="card mt-5">
+                <div class="card-body">
+                    {% if products %}
+                    <table class="table table-striped">
+                        <thead class="text-center">
+                            <tr>
+                                <th scope="col">Sr.No.</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Rent</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            {% for product in products %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{product.product_name}}</td>
+                                <td>
+                                    <img src="{{ url_for('static', filename='images/products/' + product.product_image)}}"
+                                        alt="{{product.product_name}}" class="img-fliud rounded"
+                                        style="height: 100px;width: 200px;">
+                                </td>
+                                <td>Rs. {{product.product_price}}</td>
+                                <td>{% if product.product_desc|length > 20 %}{{ product.product_desc[:20] }}...{% else
+                                    %}{{ product.product_desc }}{% endif %}</td>
+                                <td style="display: flex;gap: 5%">
+                                    <a href="/update_product/{{product.product_id}}"
+                                        class="btn btn-outline-dark"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="/delete_product/{{product.product_id}}"
+                                        class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+
+                    <div class="text-center">
+                        <h1>Click on below button to add products</h1>
+                        <a class="btn btn-outline-dark" id="add-products-tab" data-toggle="tab" href="#add-products"
+                            role="tab" aria-controls="nav-profile" aria-selected="false">Add Products</a>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="nav-orders" role="tabpanel" aria-labelledby="add-orders-tab">
+        <div class="container mt-5">
+            <h1>Products on rent : </h1>
+            <hr>
+            <ul class="list-group">
+                {% for order in orders %}
+                {% for prods in order.products %}
+                {% if prods.user_id == user.user_id %}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>Product : {{prods.product_name}}</h4>
+                            <h5><b>Customer Name : </b>{{order.full_name}}</h5>
+                            <h5><b>Email ID : </b>{{order.email}}</h5>
+                            <h5><b>Contact : </b>+91-{{order.mobile_number}}</h5>
+                            <h5><b>Address : </b>{{order.address}}</h5>
+                            <h5><b>Pincode : </b>{{order.pincode}}</h5>
+                            <h5><b>Rent Paid : </b>Rs.{{order.total_rent}}</h5>
+                            <h5><b>Deposit Paid : </b>Rs.{{order.total_deposit}}</h5>
+                        </div>
+                        <div class="col-md-4 order-img">
+                            <img class="img-fliud" style="height: 80%;width: 80%;"
+                                src="{{ url_for('static', filename='images/products/') + prods.product_image }}"
+                                alt="{{prods.product_name}}">
+                        </div>
+                    </div>
+                </li>
+                <br>
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock body %}

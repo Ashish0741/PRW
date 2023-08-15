@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}
+PRW | Cart Page
+{% endblock title %}
+
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card rounded shadow-lg">
+        <div class="card-body">
+            <h1>Cart</h1>
+            <hr>
+            {% if cart_items %}
+            <table class="table text-center table-striped">
+                <thead> 
+                    <tr>
+                        <th scope="col">SR. No.</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Rent</th>
+                        <th scope="col">Deposit</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    {% set deposit = 2 * item.quantity * item.product.product_price %}
+                    {% set rent = item.quantity * item.product.product_price %}
+                    <tr>
+                        <th class="align-middle" scope="row">{{loop.index}}</th>
+                        <td class="align-middle">
+                            <img class="container-fluid rounded"
+                                src="{{ url_for('static', filename='images/products/') + item.product.product_image }}"
+                                style="height: 100px;width: 150px;" alt="item.product.product_image">
+                        </td>
+                        <td class="align-middle">{{item.product.product_name}}</td>
+                        <td class="align-middle">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <a href="/sub_quantity/{{item.cart_id}}" class="btn btn-outline-dark btn-sm">-</a>
+                                </div>
+                                <div class="col-md-4">
+                                    {{item.quantity}}
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="/add_quantity/{{item.cart_id}}" class="btn btn-outline-dark btn-sm">+</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-middle">Rs. {{rent}}</td>
+                        <td class="align-middle">Rs. {{deposit}}</td>
+                        <td class="align-middle">
+                            <a href="/delete_cart_item/{{item.cart_id}}" class="btn btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <div class="row">
+                <div class="col-md-9">
+                    <h4 class="float-left">Total Amount (Deposit + Rent): Rs. {{ total_cart_amount }}</h4>
+                </div>
+                <div class="col-md-3">
+                    <a href="/checkout/" class="btn btn-outline-dark float-right">Checkout</a>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <a href="/" class="btn btn-outline-dark">Explore More</a>
+            </div>
+            {% else %}
+            <div class="text-center">
+                <h1 class="mb-3">Cart is Empty !!</h1>
+                <a href="/" class="btn btn-outline-dark">Add Products</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

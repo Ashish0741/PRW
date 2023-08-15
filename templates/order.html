@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+PRW | Order Page
+{% endblock title %}
+
+
+{% block body %}
+
+<div class="container mt-5">
+  {% include 'messages.html' %}
+  <div class="card mb-5">
+    <div class="card-body text-center">
+      <h1>Track Your Order :</h1>
+      <hr>
+      <form action="/order" method="post">
+        <div class="form-group">
+          <input type="text" name="razorpay_order_id" class="form-control inp" placeholder="Enter Order ID" required>
+        </div>
+        <button type="submit" class="btn btn-outline-dark">Click Here</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order preview section -->
+  {% if payment is not none %}
+  <ul class="list-group">
+    <h4>Order ID : {{payment.razorpay_order_id}}</h4>
+    <hr>
+    {% for prods in order.products %}
+    <li class="list-group-item">
+      <div class="row">
+        <div class="col-md-8">
+          <br>
+          <h5><b>Product Name : </b>{{prods.product_name}}</h5>
+          <h5><b>Rent : </b>Rs.{{order.total_rent}}</h5>
+          <h5><b>Deposit : </b>Rs.{{order.total_deposit}} (Refundable)</h5>
+          <h5><b>Amount : </b>Rs.{{payment.amount//100}}</h5>
+          <h5><b>Payment Status : </b>{{payment.payment_status}}</h5>
+        </div>
+        <div class="col-md-4 order-img">
+          <img class="img-fliud rounded" style="height: 70%;width: 70%;"
+            src="{{ url_for('static', filename='images/products/') + prods.product_image }}"
+            alt="{{prods.product_name}}">
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock body %}

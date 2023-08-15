@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+PRW | Payment Success
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    {% include 'messages.html' %}
+    <h1 class="text-center text-success mb-5">Order Placed Successfully !!</h1>
+    <div class="card">
+        <div class="card-body">
+            <h3>Order Details : </h3>
+            <hr>
+            <h4><b>Order ID : </b>{{payment.razorpay_order_id}}</h4>
+            <h4><b>Amount : </b>Rs. {{payment.amount/100}}</h4>
+            <h4><b>Payment Status : </b>{{payment.payment_status}}</h4>
+            <h4><b>Placed At : </b>{{payment.created_at}}</h4>
+            <hr>
+            <div class="text-center">
+                <a href="/" class="btn btn-outline-dark">Back to home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Product View Page
+{% endblock title %}
+
+
+{% block body %}
+
+<!-- Product view -->
+
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img class="container-fluid rounded"
+                src="{{ url_for('static', filename='images/products/') + product.product_image }}"
+                alt="{{product.product_name}}">
+        </div>
+        <div class="col-md-6">
+            <h1 class="text-justify mt-4">{{product.product_name}}</h1>
+            <h5 class="text-justify my-5">{{product.product_desc}}</h5>
+            <h5 class="mb-3"><b>Deposit : </b> Rs. {{2 * product.product_price}} (Refundable) </h5>
+            <h5><b>Rent : </b> Rs. {{product.product_price}} / month </h5>
+            <div class="row justify-content-between mt-5 ">
+                <div class="col-auto">
+                    <a href="/add_to_cart/{{product.product_id}}" class="btn btn-outline-dark p-cart">Add to cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Similar products -->
+
+<div class="container-fluid my-5">
+    <h1>Similar Products : </h1>
+    <hr>
+    <div class="row mb-5">
+    {% for product in similar_products %}
+    <div class="col-md-4 shadow-lg">
+        <div class="card w-100 h-100 mb-2">
+            <img src="{{ url_for('static', filename='images/products/' + product.product_image) }}"
+                class="container card-img-top mt-3" style="height: 300px;" alt="Product 1">
+            <div class="card-body">
+                <h5 class="card-title">{{product.product_name}}</h5>
+                <p class="card-text">Rent : Rs. {{product.product_price}}/month</p>
+                <!-- <p class="card-text">Desc : {{product.product_desc}}</p> -->
+                <div class="row justify-content-between">
+                    <div class="col-auto">
+                        <a href="/product_view_page/{{product.product_id}}" class="btn btn-outline-dark px-5">View</a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/add_to_cart/{{product.product_id}}" class="btn btn-outline-dark px-4">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+    </div>
+</div>
+{% endblock body %}
