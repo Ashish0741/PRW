@@ -75,7 +75,6 @@ def search_products(query):
         return all_products
 
     except Exception as e:
-        flash('Something went wrong. Please try again !','danger')
         return None
 
 
@@ -83,7 +82,6 @@ def search_products(query):
 
 @app.route('/')
 def index():
-    session.permanent = True
     try:
         category = Category.query.all()
         all_products = {}
@@ -109,12 +107,11 @@ def index():
 
 @app.route('/renter')
 def renter():
-    session.permanent = True
     # check if user is in or not
     if 'username' in session:
-        user = User.query.filter_by(username=session['username']).first()
         
         try:
+            user = User.query.filter_by(username=session['username']).first()
             # if user is renter redirect it to renter home page
             if user.is_renter:
                 products = Product.query.filter_by(user_id=user.user_id).all()
@@ -140,28 +137,28 @@ def renter():
 
 @app.route('/add_category', methods=['GET', 'POST'])
 def add_category():
-    session.permanent = True
-    if request.method == 'POST':
-        category_name = request.form.get('category_name')
+    if 'username' in session:
+        if request.method == 'POST':
+            
+            try:
+                category_name = request.form.get('category_name')
+                category = Category.query.filter_by(category_name=category_name).first()
 
-        try:
-            category = Category.query.filter_by(category_name=category_name).first()
+                # check if category already exists or not
+                if not category:
+                    category = Category(category_name=category_name)
+                    db.session.add(category)
+                    db.session.commit()
 
-            # check if category already exists or not
-            if not category:
-                category = Category(category_name=category_name)
-                db.session.add(category)
-                db.session.commit()
+                    flash(f'Category "{category.category_name}" added successfully !!', 'success')
+                    return redirect(url_for('renter'))
+                else:
+                    flash(f'{category.category_name} already exists !!', 'danger')
+                    return redirect(url_for('renter'))
 
-                flash(f'Category "{category.category_name}" added successfully !!', 'success')
+            except Exception as e:
+                flash('Something went wrong. Please try to add category again!', 'danger')
                 return redirect(url_for('renter'))
-            else:
-                flash(f'{category.category_name} already exists !!', 'danger')
-                return redirect(url_for('renter'))
-
-        except Exception as e:
-            flash('Something went wrong. Please try to add category again!', 'danger')
-            return redirect(url_for('renter'))
 
     else:
         flash('Session expired ! Please login again.','danger')
@@ -198,7 +195,6 @@ def image_validator(product_image):
 
 @app.route('/add_products', methods=['GET', 'POST'])
 def add_products():
-    session.permanent = True
     if 'username' in session:
         if request.method == 'POST':
 
@@ -236,7 +232,7 @@ def add_products():
                 return redirect(url_for('renter'))
 
     else:
-        flash('Please login for adding products', 'success')
+        flash('Please login for adding products', 'danger')
         return redirect(url_for('login'))
 
 
@@ -244,48 +240,51 @@ def add_products():
 
 @app.route('/update_product/<int:product_id>', methods=['POST', 'GET'])
 def update_product(product_id):
-    session.permanent = True
-    try:
-        # fetching product by id
-        product = Product.query.filter_by(product_id=product_id).first()
+    if 'username' in session:
+        try:
+            # fetching product by id
+            product = Product.query.filter_by(product_id=product_id).first()
 
-        if request.method == 'POST':
-            product.product_name = request.form.get('product_name')
-            product.product_price = request.form.get('product_price')
-            product.product_desc = request.form.get('product_desc')
-            
-            category_id = request.form.get('category_id')
-            category = Category.query.get_or_404(category_id)
-            product.category_id = category.category_id
+            if request.method == 'POST':
+                product.product_name = request.form.get('product_name')
+                product.product_price = request.form.get('product_price')
+                product.product_desc = request.form.get('product_desc')
+                
+                category_id = request.form.get('category_id')
+                category = Category.query.get_or_404(category_id)
+                product.category_id = category.category_id
 
-            product_image = request.files['product_image']
+                product_image = request.files['product_image']
 
-            # valid image
-            if image_validator(product_image):
-                img_filename = secure_filename(product_image.filename)
-                product_image.save('static/images/products/' + img_filename)
-                product.product_image = img_filename
-            else:
-                flash(
-                    f"Please provide file in {ALLOWED_EXTENSIONS} format.", 'danger')
-                return redirect(url_for('renter'))
+                # valid image
+                if image_validator(product_image):
+                    img_filename = secure_filename(product_image.filename)
+                    product_image.save('static/images/products/' + img_filename)
+                    product.product_image = img_filename
+                else:
+                    flash(
+                        f"Please provide file in {ALLOWED_EXTENSIONS} format.", 'danger')
+                    return redirect(url_for('renter'))
 
-            db.session.commit()
-            return redirect('/renter')
+                db.session.commit()
+                return redirect('/renter')
 
-        categories = Category.query.all()
-        return render_template('update_product.html', product=product, categories=categories)
+            categories = Category.query.all()
+            return render_template('update_product.html', product=product, categories=categories)
 
-    except Exception as e:
-        flash('Something went wrong. Please try to update again!', 'danger')
-        return redirect(url_for('renter'))
+        except Exception as e:
+            flash('Something went wrong. Please try to update again!', 'danger')
+            return redirect(url_for('renter'))
+
+    else:
+        flash('Please login for updating products', 'danger')
+        return redirect(url_for('login'))
 
 
 # delete product
 
 @app.route('/delete_product/<int:product_id>', methods=['POST', 'GET'])
 def delete_product(product_id):
-    session.permanent = True
     if 'username' in session:
         try:
             product = Product.query.filter_by(product_id=product_id).first()
@@ -304,7 +303,6 @@ def delete_product(product_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    session.permanent = True
     if request.method == 'POST':
 
         # get all values of post request
@@ -384,7 +382,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    session.permanent = True
     if request.method == 'POST':
 
         # Process the login form data
@@ -398,10 +395,12 @@ def login():
             if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
                 if user.is_renter == True:
                     session['username'] = username
+                    session.permanent = True
                     flash('Login as renter sucessfully!', 'success')
                     return redirect(url_for('renter'))
                 else:
                     session['username'] = username
+                    session.permanent = True
                     flash('Login as rentee sucessfully!', 'success')
                     return redirect(url_for('index'))
 
@@ -420,15 +419,18 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('login'))
+    if 'username' in session:
+        session.pop('username', None)
+        return redirect(url_for('login'))
+    else:
+        flash('User already logout!', 'danger')
+        return redirect(url_for('login'))
 
 
 # product view page
 
 @app.route('/product_view_page/<int:product_id>')
 def product_view_page(product_id):
-    session.permanent = True
     try:
         product = Product.query.get_or_404(product_id)
         similar_products = Product.query.filter(
@@ -444,7 +446,6 @@ def product_view_page(product_id):
 
 @app.route('/cart')
 def cart():
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -456,6 +457,7 @@ def cart():
                 total_rent = item.quantity * item.product.product_price
                 total_deposit = 2 * item.quantity * item.product.product_price
                 total_cart_amount += total_deposit + total_rent
+
             return render_template('cart.html', cart_items=cart_items, total_cart_amount=total_cart_amount)
         
         except Exception as e:
@@ -470,7 +472,6 @@ def cart():
 
 @app.context_processor
 def cart_item_count():
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -488,7 +489,6 @@ def cart_item_count():
 
 @app.route('/add_to_cart/<int:product_id>')
 def add_to_cart(product_id):
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -523,7 +523,6 @@ def add_to_cart(product_id):
 
 @app.route('/add_quantity/<int:cart_id>')
 def add_quantity(cart_id):
-    session.permanent = True
     try:
         # get cart item
         cart_item = CartItem.query.get_or_404(cart_id)
@@ -543,7 +542,6 @@ def add_quantity(cart_id):
 
 @app.route('/sub_quantity/<int:cart_id>')
 def sub_quantity(cart_id):
-    session.permanent = True
     try:
 
         # get cart item
@@ -568,7 +566,6 @@ def sub_quantity(cart_id):
 
 @app.route('/delete_cart_item/<int:cart_id>')
 def delete_cart_item(cart_id):
-    session.permanent = True
     try:
         cart = CartItem.query.get_or_404(cart_id)
         db.session.delete(cart)
@@ -583,7 +580,6 @@ def delete_cart_item(cart_id):
 # delete category
 @app.route('/delete_category/<int:id>')
 def delete_category(id):
-    session.permanent = True
     try:
         category = Category.query.filter_by(category_id = id).first()
         db.session.delete(category)
@@ -598,7 +594,6 @@ def delete_category(id):
 
 @app.route('/checkout/',methods=['POST','GET'])
 def checkout():
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -665,7 +660,6 @@ def checkout():
 
 @app.route('/payment',methods=['POST','GET'])
 def payment():
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -708,7 +702,6 @@ def payment():
 
 @app.route('/success',methods=['POST','GET'])
 def success():
-    session.permanent = True
     if 'username' in session:
 
         try:
@@ -762,7 +755,6 @@ def admin_panel():
 
 @app.route('/delete_user/<int:id>')
 def delete_user(id):
-    session.permanent = True
     try:
         user = User.query.filter_by(user_id = id).first()
         db.session.delete(user)
@@ -788,7 +780,6 @@ def delete_all():
 
 @app.route('/order', methods=['POST','GET'])
 def order():
-    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -818,7 +809,6 @@ def about():
 # contact section
 @app.route('/contact', methods=['POST','GET'])
 def contact():
-    session.permanent = True
     if 'username' in session:
         if request.method == 'POST':
             name = request.form.get('name')
