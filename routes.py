@@ -83,6 +83,7 @@ def search_products(query):
 
 @app.route('/')
 def index():
+    session.permanent = True
     try:
         category = Category.query.all()
         all_products = {}
@@ -108,6 +109,7 @@ def index():
 
 @app.route('/renter')
 def renter():
+    session.permanent = True
     # check if user is in or not
     if 'username' in session:
         user = User.query.filter_by(username=session['username']).first()
@@ -138,6 +140,7 @@ def renter():
 
 @app.route('/add_category', methods=['GET', 'POST'])
 def add_category():
+    session.permanent = True
     if request.method == 'POST':
         category_name = request.form.get('category_name')
 
@@ -195,6 +198,7 @@ def image_validator(product_image):
 
 @app.route('/add_products', methods=['GET', 'POST'])
 def add_products():
+    session.permanent = True
     if 'username' in session:
         if request.method == 'POST':
 
@@ -240,7 +244,7 @@ def add_products():
 
 @app.route('/update_product/<int:product_id>', methods=['POST', 'GET'])
 def update_product(product_id):
-
+    session.permanent = True
     try:
         # fetching product by id
         product = Product.query.filter_by(product_id=product_id).first()
@@ -281,6 +285,7 @@ def update_product(product_id):
 
 @app.route('/delete_product/<int:product_id>', methods=['POST', 'GET'])
 def delete_product(product_id):
+    session.permanent = True
     if 'username' in session:
         try:
             product = Product.query.filter_by(product_id=product_id).first()
@@ -299,6 +304,7 @@ def delete_product(product_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    session.permanent = True
     if request.method == 'POST':
 
         # get all values of post request
@@ -378,6 +384,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session.permanent = True
     if request.method == 'POST':
 
         # Process the login form data
@@ -421,6 +428,7 @@ def logout():
 
 @app.route('/product_view_page/<int:product_id>')
 def product_view_page(product_id):
+    session.permanent = True
     try:
         product = Product.query.get_or_404(product_id)
         similar_products = Product.query.filter(
@@ -436,6 +444,7 @@ def product_view_page(product_id):
 
 @app.route('/cart')
 def cart():
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -461,6 +470,7 @@ def cart():
 
 @app.context_processor
 def cart_item_count():
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -478,6 +488,7 @@ def cart_item_count():
 
 @app.route('/add_to_cart/<int:product_id>')
 def add_to_cart(product_id):
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username=session['username']).first()
@@ -512,7 +523,7 @@ def add_to_cart(product_id):
 
 @app.route('/add_quantity/<int:cart_id>')
 def add_quantity(cart_id):
-
+    session.permanent = True
     try:
         # get cart item
         cart_item = CartItem.query.get_or_404(cart_id)
@@ -532,7 +543,7 @@ def add_quantity(cart_id):
 
 @app.route('/sub_quantity/<int:cart_id>')
 def sub_quantity(cart_id):
-
+    session.permanent = True
     try:
 
         # get cart item
@@ -557,6 +568,7 @@ def sub_quantity(cart_id):
 
 @app.route('/delete_cart_item/<int:cart_id>')
 def delete_cart_item(cart_id):
+    session.permanent = True
     try:
         cart = CartItem.query.get_or_404(cart_id)
         db.session.delete(cart)
@@ -571,6 +583,7 @@ def delete_cart_item(cart_id):
 # delete category
 @app.route('/delete_category/<int:id>')
 def delete_category(id):
+    session.permanent = True
     try:
         category = Category.query.filter_by(category_id = id).first()
         db.session.delete(category)
@@ -585,6 +598,7 @@ def delete_category(id):
 
 @app.route('/checkout/',methods=['POST','GET'])
 def checkout():
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -651,6 +665,7 @@ def checkout():
 
 @app.route('/payment',methods=['POST','GET'])
 def payment():
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -693,6 +708,7 @@ def payment():
 
 @app.route('/success',methods=['POST','GET'])
 def success():
+    session.permanent = True
     if 'username' in session:
 
         try:
@@ -746,6 +762,7 @@ def admin_panel():
 
 @app.route('/delete_user/<int:id>')
 def delete_user(id):
+    session.permanent = True
     try:
         user = User.query.filter_by(user_id = id).first()
         db.session.delete(user)
@@ -771,6 +788,7 @@ def delete_all():
 
 @app.route('/order', methods=['POST','GET'])
 def order():
+    session.permanent = True
     if 'username' in session:
         try:
             user = User.query.filter_by(username = session['username']).first()
@@ -800,6 +818,7 @@ def about():
 # contact section
 @app.route('/contact', methods=['POST','GET'])
 def contact():
+    session.permanent = True
     if 'username' in session:
         if request.method == 'POST':
             name = request.form.get('name')
