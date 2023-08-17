@@ -140,7 +140,8 @@ PRW | Renter
             <div class="card mt-5">
                 <div class="card-body">
                     {% if products %}
-                    <table class="table-responsive table-striped">
+                    <div style="overflow-x:auto;">
+                    <table class="table table-striped">
                         <thead class="text-center">
                             <tr>
                                 <th scope="col">Sr.No.</th>
@@ -174,6 +175,7 @@ PRW | Renter
                             {% endfor %}
                         </tbody>
                     </table>
+                    </div>
                     {% else %}
 
                     <div class="text-center">
